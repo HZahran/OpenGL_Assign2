@@ -37,6 +37,7 @@ void handleCamera() {
 		camera ->reset();
 	// Replay
 	else {
+		// Track Weapon
 		camera ->org = new Point{ -10, 10, weapon ->currPos->z };
 		camera ->ref = weapon ->currPos;
 	}
@@ -97,7 +98,6 @@ void drawScene() {
 	glPushMatrix();
 
 	//Rotate Scene
-	glColor3f(1, 1, 1);
 	glRotatef(camera ->angle, 0.0, 1.0, 0.0);
 
 	glTranslatef(0, 0, 5);
@@ -115,6 +115,9 @@ void drawScene() {
 void drawView() {
 	glPushMatrix();
 
+	GLfloat color[] = WHITE;
+	glColor3fv(color);
+
 	// Weapon
 	weapon ->draw();
 
@@ -130,10 +133,28 @@ void drawView() {
 	glPopMatrix();
 }
 
+void setupLight() {
+	
+	GLfloat l0Diffuse[] = BROWN;
+	GLfloat l0Ambient[] = { 0.3f,0.4f,0.5f, 1.0f };
+	GLfloat l0Position[] = { 0, 0, -5 , 1};
+	GLfloat l0Direction[] = { 0.0f, 0.0f, room->size};
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, l0Diffuse);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, l0Ambient);
+	glLightfv(GL_LIGHT0, GL_POSITION, l0Position);
+	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 70 - 30*fabs(float(cos(camera->angle / 180 * PI))));
+	glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 1.0);
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, l0Direction);
+}
 
 void display() {
 
 	camera ->setup();
+	setupLight();
+
+
+	GLfloat color[] = WHITE;
+	glColor3fv(color);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -182,7 +203,7 @@ void init() {
 	
 	weapon->texID = texs[TEX_METAL];
 	weapon->still();
-	weapon ->targetPos = target ->currPos;
+	weapon ->targetPos =  new Point{ 0, 0, room->size - 10 };
 	weapon ->initPos = new Point{ 0, 0, 0 };
 	weapon ->fireHeight = 10;
 
@@ -199,7 +220,7 @@ void main(int argc, char** argv) {
 	glutInitWindowSize(640, 480);
 	glutInitWindowPosition(500, 200);
 
-	glutCreateWindow("Lab 5");
+	glutCreateWindow("FPS GAME");
 	glutDisplayFunc(display);
 
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
@@ -212,11 +233,8 @@ void main(int argc, char** argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
-	glEnable(GL_LIGHT2);
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_COLOR_MATERIAL);
-	glEnable(GL_TEXTURE_BINDING_2D);
 	glEnable(GL_TEXTURE_2D);
 	
 	glShadeModel(GL_SMOOTH);

@@ -4,6 +4,11 @@
 
 #define PI 3.14159265359f
 
+// Colors
+#define BROWN { 0.45f, 0.29f, 0.07f, 1.0f }
+#define YELLOW { 1.0f, 1.0f, 0.0f }
+#define WHITE { 1.0f, 1.0f, 1.0f }
+
 struct Point {
 	double x, y, z;
 };

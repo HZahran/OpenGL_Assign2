@@ -3,8 +3,6 @@
 void drawBullet() {
 	glPushMatrix();
 
-	glColor3d(1, 1, 1);
-
 	// Tail
 	drawDisk(0, 0, 2);
 	drawTorus(0, 0.3, 2);

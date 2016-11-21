@@ -13,6 +13,7 @@
 #define TEX_WALL 0
 #define TEX_METAL 1
 
+
 // Game Objects
 Room* room;
 Target * target;
@@ -22,6 +23,10 @@ Camera * camera;
 // Replay Mode
 bool replayMode;
 
+void handleWeapon();
+
+void handleCamera();
+
 void anim();
 
 void mouse(int x, int y);
@@ -30,6 +35,14 @@ void specialKeys(int k, int x, int y);
 
 void keys(unsigned char key, int x, int y);
 
+void drawScene();
+
+void drawView();
+
+void setupLight();
+
 void display();
 
 void loadImages();
+
+void init();

@@ -7,14 +7,11 @@ void Target:: draw() {
 
 	glNormal3f(0, 0, -1);
 
-	glColor3d(1, 1, 0);
+	GLfloat color[] = YELLOW;
+	glColor3fv(color);
+
 	drawDisk(0, 0, radius);
 
-	glColor3d(1, 0, 0);
-	drawDisk(0, 0, radius);
-
-	glColor3d(0, 1, 0);
-	drawDisk(0, 0, radius);
 
 	glPopMatrix();
 }

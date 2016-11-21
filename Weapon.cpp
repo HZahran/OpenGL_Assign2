@@ -8,7 +8,6 @@ void Weapon::draw() {
 	glRotated(rotation->y, 0, 1, 0);
 	glRotated(rotation->z, 0, 0, 1);
 	glScalef(scale, scale, scale);
-	glColor3d(1, 1, 1);
 
 	switch (type)
 	{
@@ -124,7 +123,7 @@ void Weapon::drawPath() {
 
 bool Weapon:: isCollision(float camAngle, Point* targetObjPos, float targetObjRadius, float roomSize) {
 
-	// Using the camera angle to detect whether it's 
+
 	float distFromDisk = currPos->z * fabs(float(sin(camAngle / 180 * PI)));
 
 	bool targetColl = fabs(currPos->z - targetObjPos ->z) < 1 && distFromDisk < targetObjRadius && currPos->y < targetObjRadius;
