@@ -87,7 +87,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OpenGL3DTemplate.cpp" />
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Grenade.cpp" />
+    <ClCompile Include="Room.cpp" />
+    <ClCompile Include="Shapes.cpp" />
+    <ClCompile Include="Shuriken.cpp" />
+    <ClCompile Include="Target.cpp" />
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OpenGL3DTemplate.rc">
@@ -98,6 +106,17 @@
     <Image Include="textures\metal.bmp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Grenade.h" />
+    <ClInclude Include="Room.h" />
+    <ClInclude Include="Shapes.h" />
+    <ClInclude Include="Shuriken.h" />
+    <ClInclude Include="Target.h" />
+    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
