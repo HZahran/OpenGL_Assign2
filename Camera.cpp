@@ -1,8 +1,8 @@
 #include "Camera.h"
 
 void Camera::reset() {
-	org = new Point{ 0, 0, -4 };
-	ref = new Point{ 0, 0, 1 };
+	org = new Point{ 0, 0, 5 };
+	ref = new Point{ 0, 0, 10 };
 }
 
 void Camera:: setup() {

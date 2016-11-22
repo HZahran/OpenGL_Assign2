@@ -30,6 +30,5 @@ struct Weapon {
 	void setPath();
 	
 	void drawPath();
-	bool isCollision(float camAngle, Point * targetObjPos, float targetObjRadius, float roomSize);
 };
 

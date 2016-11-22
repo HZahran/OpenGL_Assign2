@@ -5,7 +5,7 @@ void Room:: draw() {
 	glPushMatrix();
 
 	glBindTexture(GL_TEXTURE_2D, texID);
-	glTranslated(-size / 2, -size / 2, -size);
+	glTranslated(-size / 2, -size / 2, 0);
 
 	// Front
 	drawWall(size, 0, 0, 0, 0, 0, 0, 0);

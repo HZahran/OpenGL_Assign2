@@ -2,6 +2,7 @@
 
 void drawBullet() {
 	glPushMatrix();
+	glRotated(90, 0, 0, 1);
 
 	// Tail
 	drawDisk(0, 0, 2);

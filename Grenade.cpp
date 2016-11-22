@@ -2,7 +2,7 @@
 
 void drawGrenade() {
 	glPushMatrix();
-	glRotated(-90, 1, 0, 0);
+	glRotated(-90, 1, 1, 0);
 	// Head
 	drawDisk(6, 0, 1.7);
 	drawCylinder(4, 1.7, 1.7, 2, 300);

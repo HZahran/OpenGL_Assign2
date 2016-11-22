@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Weapon.h"
 
 void Weapon::draw() {
@@ -9,6 +11,8 @@ void Weapon::draw() {
 	glRotated(rotation->z, 0, 0, 1);
 	glScalef(scale, scale, scale);
 
+	glBindTexture(GL_TEXTURE_2D, texID);
+
 	switch (type)
 	{
 
@@ -19,7 +23,7 @@ void Weapon::draw() {
 		drawGrenade(); break;
 
 	case SHURIKEN:
-		drawShuriken(texID); break;
+		drawShuriken(); break;
 	default:
 		break;
 	}
@@ -28,7 +32,7 @@ void Weapon::draw() {
 }
 
 void Weapon::still() {
-	currPos = new Point{ 0, -2, 0.5 };
+	currPos = new Point{ 0, -2, 10};
 	scale = 0.2;
 	rotation = new Point{ -10, 0, 0 };
 	step = 0;
@@ -41,9 +45,9 @@ void Weapon::move() {
 	switch (type)
 	{
 	case BULLET:
-		currPos->z += 2;
+		currPos->z ++;
 
-		rotation->z += 5;
+		rotation->z += 10;
 		break;
 
 	case GRENADE:
@@ -105,30 +109,21 @@ void Weapon::setPath() {
 void Weapon::drawPath() {
 
 	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, NULL);
 
 	glPointSize(1);
 	glColor3f(1, 1, 1);
 
 	// Grenade & Shuriken
+	glNormal3d(0, 0, -1);
+
 	glBegin(GL_POINTS);
+
 	for (float t = 0; t < 1; t += 0.001)
 	{
 		Point* p = bezier(t, path);
 		glVertex3f(p->x, p->y, p->z);
-
 	}
 	glEnd();
 	glPopMatrix();
-}
-
-bool Weapon:: isCollision(float camAngle, Point* targetObjPos, float targetObjRadius, float roomSize) {
-
-
-	float distFromDisk = currPos->z * fabs(float(sin(camAngle / 180 * PI)));
-
-	bool targetColl = fabs(currPos->z - targetObjPos ->z) < 1 && distFromDisk < targetObjRadius && currPos->y < targetObjRadius;
-
-	bool wallColl = currPos->z < 0 || currPos->z > roomSize * fabs(float(cos(camAngle / 180 * PI))) + 5;
-
-	return targetColl || wallColl || currPos->y < -targetObjRadius;
 }

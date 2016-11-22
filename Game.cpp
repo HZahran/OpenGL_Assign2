@@ -3,17 +3,50 @@
 #include "Game.h"
 #include "SOIL.h"
 
+#include <windows.h>    
+
 using namespace std;
 
-string texPaths[] = {"bricks2.jpg","metal.bmp"};
+// Textures
+
+#define TEX_WALL 0
+#define TEX_METAL 1
+#define TEX_GRENADE 2
+#define TEX_TARGET 3
+
+#define NUM_TEXS 4
+
+string texPaths[] = {"bricks2.jpg","metal.bmp","grenade.jpg","sisi.jpg"};
 GLuint texs[NUM_TEXS];
 
+bool isCollision() {
+
+	float distFromDiskX = fabs(target->currPos->x + camera->angle);
+	float distFromDiskZ = sqrt(weapon->currPos->z * weapon->currPos->z - target->currPos->x * target->currPos->x);
+
+		//fabs( target->currPos->x + (weapon->currPos->z * float(sin( camera->angle / 180 * PI) )));
+
+	bool targetColl = fabs(distFromDiskZ - target->currPos->z) < 1 && distFromDiskX < target->radius && weapon->currPos->y < target->radius;
+
+	bool wallColl = weapon->currPos->z < 0 || weapon->currPos->z > room->size * fabs(float(cos(camera->angle / 180 * PI)));
+	
+	if (targetColl || wallColl)
+		cout << distFromDiskX<< endl;
+	if (targetColl) {
+		PlaySound(TEXT("sounds/maysa7esh.wav"), NULL, SND_ASYNC | SND_FILENAME);
+	}
+	
+	return targetColl || wallColl || weapon->currPos->y < -target->radius;
+}
+
 void handleWeapon() {
+
 	// Set Weapon Path
 	weapon ->animate();
 
-	if (weapon->isCollision(camera->angle , target->currPos, target->radius, room->size))
+	if (isCollision())
 	{
+
 		// End Replay
 		if (replayMode)
 		{
@@ -28,7 +61,7 @@ void handleWeapon() {
 		}
 	}
 	else
-		weapon ->step += 0.01;
+		weapon ->step += (0.002 - 0.0005 * replayMode); // Slow Down during replay
 }
 
 void handleCamera() {
@@ -45,6 +78,8 @@ void handleCamera() {
 
 void anim() {
 
+	if (glutGet(GLUT_ELAPSED_TIME) < FADE_IN_TIME) ambient += 0.002;
+
 	handleWeapon();
 	
 	handleCamera();
@@ -52,9 +87,9 @@ void anim() {
 	glutPostRedisplay();
 }
 
-void mouse(int x, int y) {
+void mouse(int x, int y){
 	if (weapon ->isFired || x > 400 || x < 240) return;
-	camera ->angle = x - 320 + 180;
+	camera ->angle = x - 320;
 	glutPostRedisplay();
 }
 
@@ -85,13 +120,12 @@ void keys(unsigned char key, int x, int y) {
 	if (key == 'w' && weapon ->fireHeight < room ->size/2)
 		weapon ->fireHeight ++;
 
-	if (key == 's' && weapon ->fireHeight > 10)
+	if (key == 's' && weapon ->fireHeight > 5)
 		weapon ->fireHeight --;
 
 	glutPostRedisplay();
 
 }
-
 
 // Surrounding Scene
 void drawScene() {
@@ -100,7 +134,7 @@ void drawScene() {
 	//Rotate Scene
 	glRotatef(camera ->angle, 0.0, 1.0, 0.0);
 
-	glTranslatef(0, 0, 5);
+	//glTranslatef(0, 0, -5);
 
 	//Room
 	room ->draw();
@@ -115,10 +149,17 @@ void drawScene() {
 void drawView() {
 	glPushMatrix();
 
+	GLfloat shininess[] = { 150 };
+	glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+
 	GLfloat color[] = WHITE;
 	glColor3fv(color);
 
 	// Weapon
+
+	if (weapon->type == SHURIKEN) weapon->texID = texs[TEX_METAL];
+	else weapon->texID = texs[TEX_GRENADE];
+
 	weapon ->draw();
 
 	// Path
@@ -136,7 +177,7 @@ void drawView() {
 void setupLight() {
 	
 	GLfloat l0Diffuse[] = BROWN;
-	GLfloat l0Ambient[] = { 0.3f,0.4f,0.5f, 1.0f };
+	GLfloat l0Ambient[] = { ambient - 0.2, ambient - 0.1 ,ambient, 1.0f };
 	GLfloat l0Position[] = { 0, 0, -5 , 1};
 	GLfloat l0Direction[] = { 0.0f, 0.0f, room->size};
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, l0Diffuse);
@@ -190,28 +231,29 @@ void loadImages() {
 }
 
 void init() {
+
 	// Room
 	room = new Room{100 , texs[TEX_WALL]};
 
 	// Target
 
-	target = new Target{ new Point{ 0, 0, room ->size - 10 } , // Curr Point
-		 5 }; // Radius
+	target = new Target{ new Point{ -10, 0, room->size - 50 } , // Curr Point
+		 5,  // Radius
+		 texs[TEX_TARGET]
+	};
 
 	// Weapon
 	weapon = new Weapon{};
 	
-	weapon->texID = texs[TEX_METAL];
+	weapon->texID = texs[TEX_GRENADE];
 	weapon->still();
 	weapon ->targetPos =  new Point{ 0, 0, room->size - 10 };
-	weapon ->initPos = new Point{ 0, 0, 0 };
-	weapon ->fireHeight = 10;
+	weapon ->initPos = new Point{ 0, 0, 6};
+	weapon ->fireHeight = 5;
 
 	// Camera
 	camera = new Camera{};
 	camera ->reset();
-	camera ->angle = 180;
-
 }
 
 void main(int argc, char** argv) {
@@ -236,8 +278,13 @@ void main(int argc, char** argv) {
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_TEXTURE_2D);
-	
+	glEnable(GL_SHININESS);
+	glEnable(GL_COLOR_MATERIAL_FACE);
+
 	glShadeModel(GL_SMOOTH);
+
+	// Background music
+	PlaySound(TEXT("sounds/main-theme.wav"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
 
 	loadImages();
 	init();

@@ -6,7 +6,10 @@ void drawCylinder(float pos, float rad1, float rad2, float height, int slices) {
 	GLUquadricObj *obj;
 	obj = gluNewQuadric();
 	gluQuadricDrawStyle(obj, GLU_LINE);
-	gluCylinder(obj, rad1, rad2, height, slices, 300);
+	gluQuadricTexture(obj, true);
+	gluQuadricNormals(obj, GLU_SMOOTH);
+	gluCylinder(obj, rad1, rad2, height, slices, 100);
+	gluDeleteQuadric(obj);
 	glPopMatrix();
 }
 
@@ -16,14 +19,21 @@ void drawDisk(float pos, float rad1, float rad2) {
 	GLUquadricObj *obj;
 	obj = gluNewQuadric();
 	gluQuadricDrawStyle(obj, GLU_LINE);
-	gluDisk(obj, rad1, rad2, 300, 300);
+	gluQuadricTexture(obj, true);
+	gluQuadricNormals(obj, GLU_SMOOTH);
+	gluDisk(obj, rad1, rad2, 100, 100);
+	gluDeleteQuadric(obj);
 	glPopMatrix();
 }
 
 void drawSphere(float pos, float rad) {
 	glPushMatrix();
 	glTranslatef(0, 0, pos);
-	glutSolidSphere(rad, 50, 50);
+	GLUquadricObj* sphere = gluNewQuadric();
+	gluQuadricTexture(sphere, true);
+	gluQuadricNormals(sphere, GLU_SMOOTH);
+	gluSphere(sphere, rad, 50, 50);
+	gluDeleteQuadric(sphere);
 	glPopMatrix();
 }
 
@@ -36,7 +46,7 @@ void drawTorus(float pos, float rad1, float rad2) {
 
 void drawPoly(Poly r, float texRep) {
 	glPushMatrix();
-	glBegin(GL_QUADS);
+	glBegin(GL_POLYGON);
 
 	glTexCoord3f(texRep * (r.p1.x > 0), texRep * (r.p1.y > 0), texRep * (r.p1.z > 0));
 	glVertex3d(r.p1.x, r.p1.y, r.p1.z);
@@ -49,6 +59,8 @@ void drawPoly(Poly r, float texRep) {
 
 	glTexCoord3f(texRep * (r.p4.x > 0), texRep * (r.p4.y > 0), texRep * (r.p4.z > 0));
 	glVertex3d(r.p4.x, r.p4.y, r.p4.z);
+
+
 	glEnd();
 	glPopMatrix();
 }
@@ -98,10 +110,11 @@ void drawWall(float roomSize, int dir, bool rotX, bool rotY, bool rotZ, bool tra
 
 void drawScope() {
 	glPushMatrix();
-	glTranslated(0, 0, 0.5);
+	glTranslated(0, 0, 9.5);
 	glScaled(0.5, 0.5, 0.5);
 
 	glColor3f(0, 0, 0);
+	glNormal3d(0, 0, -1);
 
 	glBegin(GL_LINES);
 	// Right

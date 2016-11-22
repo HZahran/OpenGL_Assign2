@@ -10,11 +10,12 @@ void drawBladeSide(int dir) {
 
 	// Tail
 	Poly tailPoly;
-	tailPoly.p1 = *(new Point{ 0, 0, 0 });
+	tailPoly.p1 = *(new Point{ 0, 0, 0 });;
+
 	tailPoly.p2 = *(new Point{ -sidePoint, 0, sidePoint });
 	tailPoly.p3 = *(new Point{ 0, height, lenTail });
 	tailPoly.p4 = *(new Point{ sidePoint, 0, sidePoint });
-	drawPoly(tailPoly, 0.75);
+	drawPoly(tailPoly, 1); 
 
 	// Body
 	Poly headPoly;
@@ -39,9 +40,8 @@ void drawBlade(double angle, float pos) {
 	glPopMatrix();
 }
 
-void drawShuriken(GLuint texID) {
+void drawShuriken() {
 	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, texID);
 
 	float diamondRad = 3;
 	// Body

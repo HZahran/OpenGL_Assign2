@@ -2,13 +2,13 @@
 
 void Target:: draw() {
 	glPushMatrix();
-	glRotated(-180, 0, 1, 0);
+	glBindTexture(GL_TEXTURE_2D, texID);
 	glTranslated(currPos->x, currPos->y, currPos->z);
 
 	glNormal3f(0, 0, -1);
 
-	GLfloat color[] = YELLOW;
-	glColor3fv(color);
+	//GLfloat color[] = YELLOW;
+	//glColor3fv(color);
 
 	drawDisk(0, 0, radius);
 

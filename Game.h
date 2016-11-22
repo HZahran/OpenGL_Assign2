@@ -6,19 +6,16 @@
 
 
 #define SPACE_BUTTON 32
-
-// Textures
-#define NUM_TEXS 2
-
-#define TEX_WALL 0
-#define TEX_METAL 1
-
+#define FADE_IN_TIME 3000
 
 // Game Objects
 Room* room;
 Target * target;
 Weapon * weapon;
 Camera * camera;
+
+// Light 
+float ambient = 0;
 
 // Replay Mode
 bool replayMode;
