@@ -41,8 +41,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\Sem7\Graphics\soil\Simple OpenGL Image Library\src;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Sem7\Graphics\soil\Simple OpenGL Image Library\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Sem7\Graphics\T10_31-1997_Hisham Magdy Zahran\OpenGL_Assign2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Sem7\Graphics\T10_31-1997_Hisham Magdy Zahran\OpenGL_Assign2\lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>D:\Sem7\Graphics\T10_31-1997_Hisham Magdy Zahran\OpenGL_Assign2\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -54,12 +55,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Sem7\Graphics\OpenGL3DTemplate;D:\Sem7\Graphics\soil\Simple OpenGL Image Library\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Sem7\Graphics\T10_31-1997_Hisham Magdy Zahran\OpenGL_Assign2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glut32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glut32.lib;SOIL.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OutputPath)\..</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -87,17 +88,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Bullet.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Grenade.cpp" />
-    <ClCompile Include="Room.cpp" />
-    <ClCompile Include="Shapes.cpp" />
-    <ClCompile Include="Shuriken.cpp" />
-    <ClCompile Include="Target.cpp" />
-    <ClCompile Include="Weapon.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="OpenGL3DTemplate.rc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ResourceCompile>
@@ -108,15 +98,31 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bullet.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Grenade.h" />
-    <ClInclude Include="Room.h" />
-    <ClInclude Include="Shapes.h" />
-    <ClInclude Include="Shuriken.h" />
-    <ClInclude Include="Target.h" />
-    <ClInclude Include="Weapon.h" />
+    <ClCompile Include="src\Bullet.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Grenade.cpp" />
+    <ClCompile Include="src\Room.cpp" />
+    <ClCompile Include="src\Shapes.cpp" />
+    <ClCompile Include="src\Shuriken.cpp" />
+    <ClCompile Include="src\Target.cpp" />
+    <ClCompile Include="src\Weapon.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Bullet.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\Game.h" />
+    <ClInclude Include="include\glaux.h" />
+    <ClInclude Include="include\glew.h" />
+    <ClInclude Include="include\glut.h" />
+    <ClInclude Include="include\Grenade.h" />
+    <ClInclude Include="include\resource.h" />
+    <ClInclude Include="include\Room.h" />
+    <ClInclude Include="include\Shapes.h" />
+    <ClInclude Include="include\Shuriken.h" />
+    <ClInclude Include="include\SOIL.h" />
+    <ClInclude Include="include\Target.h" />
+    <ClInclude Include="include\Weapon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
