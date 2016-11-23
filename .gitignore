@@ -32,3 +32,9 @@
 
 *.sdf
 *.opensdf
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.rc
+*.sln

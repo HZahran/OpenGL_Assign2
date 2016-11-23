@@ -113,10 +113,10 @@ void drawScope() {
 	glTranslated(0, 0, 9.5);
 	glScaled(0.5, 0.5, 0.5);
 
-	glColor3f(0, 0, 0);
 	glNormal3d(0, 0, -1);
 
 	glBegin(GL_LINES);
+
 	// Right
 	glVertex3d(0.2, 0, 0);
 	glVertex3d(0.7, 0, 0);

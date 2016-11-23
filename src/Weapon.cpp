@@ -45,15 +45,15 @@ void Weapon::move() {
 	switch (type)
 	{
 	case BULLET:
-		currPos->z ++;
+		currPos->z += 0.5;
 
-		rotation->z += 10;
+		rotation->z += 20;
 		break;
 
 	case GRENADE:
 		currPos = bezier(step, path);
 
-		rotation->x += 5;
+		rotation->x += 10;
 		rotation->y += 5;
 		rotation->z += 5;
 		break;
@@ -61,7 +61,7 @@ void Weapon::move() {
 	case SHURIKEN:
 		currPos = bezier(step, path);
 
-		rotation->y += 5;
+		rotation->y += 2;
 		break;
 
 	default:
@@ -88,14 +88,14 @@ void Weapon::setPath() {
 
 	case GRENADE:
 		// Grenade
-		p1 = new Point{ targetPos->x, fireHeight, fireHeight / 2 };
-		p2 = new Point{ targetPos->x, fireHeight, targetPos->z - fireHeight / 2 };
+		p1 = new Point{ targetPos->x, fireHeight, targetPos->z / 4 };
+		p2 = new Point{ targetPos->x, fireHeight, targetPos->z * 3 / 4 };
 		break;
 
 	case SHURIKEN:
 		// Shuriken
-		p1 = new Point{ fireHeight / 2, 0, fireHeight / 2 };
-		p2 = new Point{ fireHeight, fireHeight, targetPos->z - fireHeight / 2 };
+		p1 = new Point{ fireHeight / 4, 0, targetPos->z / 2 };
+		p2 = new Point{ fireHeight, fireHeight/2, targetPos->z * 4/5};
 		break;
 	default:
 		break;
@@ -109,7 +109,6 @@ void Weapon::setPath() {
 void Weapon::drawPath() {
 
 	glPushMatrix();
-	glBindTexture(GL_TEXTURE_2D, NULL);
 
 	glPointSize(1);
 	glColor3f(1, 1, 1);

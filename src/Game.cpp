@@ -9,30 +9,63 @@ using namespace irrklang;
 
 using namespace std;
 
+
+// OnScreen Alerts
+#define ALERT_TIME 5000
+#define NUM_ALERTS 4
+string onScreenText[NUM_ALERTS] = { "Use Space To Fire", "Use Arrows To Move Target" , "Use W-A-S-D For Aiming","Use R To Replay"};
+
 // Textures
 #define TEX_WALL 0
 #define TEX_METAL 1
 #define TEX_GRENADE 2
 #define TEX_TARGET 3
+#define TEX_TARGET_FIRE 4
 
-#define NUM_TEXS 4
+#define NUM_TEXS 5
 
-string texPaths[] = {"bricks2.jpg","metal.bmp","grenade.jpg","target.png"};
+string texPaths[] = {"bricks2.jpg","metal.bmp","grenade.jpg","target.png","fire.jpg"};
 GLuint texs[NUM_TEXS];
+
+//Sound
+ISoundEngine* soundEngine = createIrrKlangDevice();
+string sounds[] = { "gun.mp3","grenade.mp3","shuriken.wav" };
+
+void drawText(string text, float x, float y) {
+    
+	glPushMatrix();
+	
+	glNormal3d(0, 0, -1);
+	glColor3d(1, 1, 1);
+	glRasterPos3f(x, y, 6);
+	for (unsigned int i = 0; i< text.length(); i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, text[i]);
+
+	glPopMatrix();
+	
+}
+
+void playSound(string filename, bool loop) {
+	string path = "sounds/" + filename;
+	soundEngine->play2D(path.c_str(), loop);
+}
 
 bool isCollision() {
 
-	float distFromDiskX = fabs(target->currPos->x + camera->angle);
-	float distFromDiskZ = sqrt(weapon->currPos->z * weapon->currPos->z - target->currPos->x * target->currPos->x);
+	float distFromDiskX = fabs(target->currPos->x + (weapon->currPos->z * float(sin(camera->angle / 180 * PI))));
+	//float distFromDiskZ = sqrt(weapon->currPos->z * weapon->currPos->z - target->currPos->x * target->currPos->x);
 
-		//fabs( target->currPos->x + (weapon->currPos->z * float(sin( camera->angle / 180 * PI) )));
 
-	bool targetColl = fabs(distFromDiskZ - target->currPos->z) < 1 && distFromDiskX < target->radius && weapon->currPos->y < target->radius;
+	bool targetColl = fabs(weapon->currPos->z - target->currPos->z) < 1 && distFromDiskX < target->radius && weapon->currPos->y < target->radius;
 
 	bool wallColl = weapon->currPos->z < 0 || weapon->currPos->z > room->size * fabs(float(cos(camera->angle / 180 * PI)));
-	
+
 	if (targetColl) {
-		//PlaySound(TEXT("sounds/maysa7esh.wav"), NULL, SND_ASYNC | SND_FILENAME);
+		score += 5;
+		target->texID = texs[TEX_TARGET_FIRE];
+		isHit = true;
+		if(!replayMode)
+		playSound("hit.mp3", false);
 	}
 	
 	return targetColl || wallColl || weapon->currPos->y < -target->radius;
@@ -46,21 +79,17 @@ void handleWeapon() {
 	if (isCollision())
 	{
 
-		// End Replay
-		if (replayMode)
-		{
-			weapon ->isFired = false;
+		if (replayMode) {
 			replayMode = false;
+			target->currPos = &(targetCurrPos); // Reset To current pos
 		}
-		// Start Replay
-		else {
-			//Reset
+		else
 			weapon ->still();
-			replayMode = true;
-		}
+		
+		weapon->isFired = false;
 	}
 	else
-		weapon ->step += (0.002 - 0.0005 * replayMode); // Slow Down during replay
+		weapon ->step += (0.002 - 0.001 * replayMode); // Slow Down during replay
 }
 
 void handleCamera() {
@@ -76,8 +105,19 @@ void handleCamera() {
 }
 
 void anim() {
+	
+	// Fade Animation
+	if (glutGet(GLUT_ELAPSED_TIME) < FADE_IN_TIME) ambient += 0.004;
+	else ambient = 0.5;
 
-	if (glutGet(GLUT_ELAPSED_TIME) < FADE_IN_TIME) ambient += 0.002;
+	// Target Fire Anim
+	if (weapon->type == GRENADE && isHit && !replayMode && fireTimer < 5000)
+		fireTimer += 10;
+	else {
+		isHit = false;
+		fireTimer = 0;
+		target->texID = texs[TEX_TARGET];
+	}
 
 	handleWeapon();
 	
@@ -94,14 +134,14 @@ void mouse(int x, int y){
 
 void specialKeys(int k, int x, int y)
 {
-	if (k == GLUT_KEY_RIGHT && weapon ->targetPos->x > -(room ->size / 2) + 5)
-		weapon ->targetPos->x--;
-	if (k == GLUT_KEY_LEFT && weapon ->targetPos->x < (room ->size / 2) - 5)
-		weapon ->targetPos->x++;
-	if (k == GLUT_KEY_UP && weapon ->targetPos->z < room ->size)
-		weapon ->targetPos->z++;
-	if (k == GLUT_KEY_DOWN && weapon ->targetPos->z > 15)
-		weapon ->targetPos->z--;
+	if (k == GLUT_KEY_RIGHT && target->currPos->x > -(room ->size / 2) + target->radius)
+		target->currPos->x--;
+	if (k == GLUT_KEY_LEFT && target->currPos->x < (room ->size / 2) - target->radius)
+		target->currPos->x++;
+	if (k == GLUT_KEY_UP && target->currPos->z < room ->size)
+		target->currPos->z++;
+	if (k == GLUT_KEY_DOWN && target->currPos->z > room -> size/2)
+		target->currPos->z--;
 
 	glutPostRedisplay();
 }
@@ -110,18 +150,47 @@ void keys(unsigned char key, int x, int y) {
 
 	if (weapon ->isFired) return;
 
-	if (key == SPACE_BUTTON)
-		weapon ->isFired = true;
+	if (key == SPACE_BUTTON) {
 
-	if (key >= '1' && key <= '3')
-		weapon ->type = key - '0' - 1;
+		// Define curr state for replay
+		replayAngle = camera->angle;
+		targetReplayPos = *(target->currPos);
+		replayWeapon = weapon->type;
+
+		weapon->isFired = true;
+		playSound(sounds[weapon->type], false);
+	}
+
+	if (key >= '1' && key <= '3') {
+		weapon->type = key - '0' - 1;
+
+		// Reset Path
+		weapon->targetPos = new Point{ 0, 0, room->size - 10 };
+	}
 
 	if (key == 'w' && weapon ->fireHeight < room ->size/2)
 		weapon ->fireHeight ++;
 
-	if (key == 's' && weapon ->fireHeight > 5)
+	if (key == 's' && weapon ->fireHeight > 1)
 		weapon ->fireHeight --;
 
+	if (key == 'd' && target->currPos->x > -(room->size / 2) + target->radius)
+		weapon->targetPos->x--;
+
+	if (key == 'a' && target->currPos->x < (room->size / 2) - target->radius)
+		weapon->targetPos->x++;
+
+	if (key == 'r' && replayAngle !=-1 && !replayMode)
+	{
+		// Retrieve state
+		camera->angle = replayAngle;
+		targetCurrPos = *(target->currPos);
+		target->currPos = &(targetReplayPos);
+		weapon->type = replayWeapon;
+
+		replayMode = true;
+		weapon->isFired = true;
+	}
 	glutPostRedisplay();
 
 }
@@ -144,7 +213,19 @@ void drawScene() {
 	glPopMatrix();
 }
 
-// FPS View
+
+void drawOnScreenText() {
+
+	// Alert
+	if (glutGet(GLUT_ELAPSED_TIME) < NUM_ALERTS * ALERT_TIME)
+		drawText(onScreenText[int(glutGet(GLUT_ELAPSED_TIME) / ALERT_TIME)], 0.5, 0.8);
+
+	// Score
+	string scoreText = "Score : "+ to_string(score);
+	drawText(scoreText, -0.5, 0.8);
+}
+
+// FPS Screen
 void drawView() {
 	glPushMatrix();
 
@@ -155,14 +236,17 @@ void drawView() {
 	glColor3fv(color);
 
 	// Weapon
-
 	if (weapon->type == SHURIKEN) weapon->texID = texs[TEX_METAL];
 	else weapon->texID = texs[TEX_GRENADE];
 
 	weapon ->draw();
 
-	// Path
+	// Path && Text
 	if (!weapon ->isFired) {
+
+		glBindTexture(GL_TEXTURE_2D, NULL);
+		
+		drawOnScreenText();
 
 		if (weapon ->type == BULLET)
 			drawScope();
@@ -229,14 +313,6 @@ void loadImages() {
 	}	
 }
 
-void playSound(string filename) {
-	irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
-	if (!engine) return; // could not start engine		
-	
-	string path = "sounds/" + filename;
-	engine->play2D(path.c_str(), true); // play some mp3 file, looped
-						
-}
 
 void init() {
 
@@ -244,8 +320,7 @@ void init() {
 	room = new Room{100 , texs[TEX_WALL]};
 
 	// Target
-
-	target = new Target{ new Point{ -10, 0, room->size - 50 } , // Curr Point
+	target = new Target{ new Point{ 10, 0, room->size - 50 } , // Curr Point
 		 5,  // Radius
 		 texs[TEX_TARGET]
 	};
@@ -256,7 +331,7 @@ void init() {
 	weapon->texID = texs[TEX_GRENADE];
 	weapon->still();
 	weapon ->targetPos =  new Point{ 0, 0, room->size - 10 };
-	weapon ->initPos = new Point{ 0, 0, 6};
+	weapon ->initPos = new Point{ 0, 0, 9};
 	weapon ->fireHeight = 5;
 
 	// Camera
@@ -293,7 +368,7 @@ void main(int argc, char** argv) {
 	glShadeModel(GL_SMOOTH);
 
 	// Background music
-	playSound("main-theme.wav");
+	playSound("main-theme.wav",true);
 
 	loadImages();
 	init();

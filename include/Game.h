@@ -17,9 +17,19 @@ Camera * camera;
 // Light 
 float ambient = 0;
 
+// Score
+int score = 0;
 
 // Replay Mode
 bool replayMode;
+float replayAngle = -1; // Cam angle of replay
+Point targetReplayPos; // Target Pos at replay
+Point targetCurrPos; // Temp for returning after replay
+int replayWeapon;
+
+// Target Fire
+bool isHit;
+float fireTimer;
 
 void handleWeapon();
 
